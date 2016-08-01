@@ -9,13 +9,13 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
-import java.util.Timer;
+import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
@@ -33,6 +33,15 @@ public class MainActivity extends Activity {
     long updatedTime = 0L;
     private int secs, mins;
 
+    private ListView lvItem;
+    private ItemsAdapter adapter;
+    private ArrayList<ItemModel> myList;
+    private String fileName;
+    private int fileCount = 0;
+
+    public MainActivity() {
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,14 +51,24 @@ public class MainActivity extends Activity {
         stop=(Button)findViewById(R.id.stop_btn);
         record=(Button)findViewById(R.id.record_btn);
         tvTimer=(TextView) findViewById((R.id.timer_tv)) ;
+        lvItem = (ListView) findViewById(R.id.lvItem);
         stop.setTransformationMethod(null);
         record.setTransformationMethod(null);
+        myList = new ArrayList<ItemModel>();
 
         record.setEnabled(true);
         stop.setEnabled(false);
 //        play.setEnabled(false);
 
-        outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
+//        lvItem.setAdapter(new ItemsAdapter(myList, getApplicationContext()));
+//        lvItem.setAdapter(adapter);
+
+        lvItem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                play(position);
+            }
+        });
 
         record.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,9 +92,21 @@ public class MainActivity extends Activity {
 //        });
     }
 
+    public void displayItems(){
+        adapter = new ItemsAdapter(myList, getApplicationContext());
+        lvItem.setAdapter(adapter);
+    }
+
+    public void generateNewFileName(){
+        fileCount++;
+        outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Recording" + fileCount + ".3gp";
+        fileName = "Recording" + fileCount;
+    }
+
     public void record(){
 
         resetTimer();
+        generateNewFileName();
         record.setBackgroundColor(getResources().getColor(R.color.colorgrey));
         stop.setBackgroundColor(getResources().getColor(R.color.colorgreen));
 
@@ -84,10 +115,10 @@ public class MainActivity extends Activity {
 
         checkMediaRecorder();
 
-        File outFile = new File(outputFile);
-        if(outFile.exists()){
-            outFile.delete();
-        }
+//        File outFile = new File(outputFile);
+//        if(outFile.exists()){
+//            outFile.delete();
+//        }
 
         myAudioRecorder=new MediaRecorder();
         myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -111,6 +142,10 @@ public class MainActivity extends Activity {
 
     public void stop(){
 
+        myList.add(new ItemModel(fileName, tvTimer.toString()));
+        displayItems();
+
+        tvTimer.setText(getResources().getString(R.string.timer_val));
         stop.setBackgroundColor(getResources().getColor(R.color.colorgrey));
         record.setBackgroundColor(getResources().getColor(R.color.colorgreen));
 
@@ -126,33 +161,34 @@ public class MainActivity extends Activity {
 //        play.setEnabled(true);
     }
 
-//    public void play(){
-//
-//        checkMediaPlayer();
-//        m = new MediaPlayer();
-//
-//        stop.setEnabled(false);
-//        record.setEnabled(false);
+    public void play(int pos){
+
+        tvTimer.setText(myList.get(pos).getDuration());
+        checkMediaPlayer();
+        m = new MediaPlayer();
+
+        stop.setEnabled(false);
+        record.setEnabled(false);
 //        play.setEnabled(false);
-//
-//        try {m.setDataSource(outputFile);}
-//        catch (IOException e) {e.printStackTrace();}
-//
-//        try {m.prepare();}
-//        catch (IOException e) {e.printStackTrace();}
-//
-//        m.start();
-//        if (mins > 0) {
-//            countDown(mins * 60 + secs);
-//        } else
-//            countDown(secs);
-//        m.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            @Override
-//            public void onCompletion(MediaPlayer mp) {
-//                record.setEnabled(true);
-//            }
-//        });
-//    }
+
+        try {m.setDataSource(outputFile);}
+        catch (IOException e) {e.printStackTrace();}
+
+        try {m.prepare();}
+        catch (IOException e) {e.printStackTrace();}
+
+        m.start();
+        if (mins > 0) {
+            countDown(mins * 60 + secs);
+        } else
+            countDown(secs);
+        m.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                record.setEnabled(true);
+            }
+        });
+    }
 
     private void countDown(final int i) {
         int temp = i;

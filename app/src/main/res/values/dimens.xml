@@ -11,6 +11,7 @@
     <dimen name="button_hight">50dp</dimen>
     <dimen name="button_width">135dp</dimen>
     <dimen name="button_text_size">18dp</dimen>
+    <dimen name="lv_text_size">20dp</dimen>
 
     <dimen name="card_timer_hight">150dp</dimen>
     <dimen name="card_margin">15dp</dimen>
@@ -19,4 +20,8 @@
     <dimen name="card_corner_radius">4dp</dimen>
     <dimen name="card_elevation">3dp</dimen>
     <dimen name="margin_layout">25dp</dimen>
+
+    <dimen name="row_heirght">50dp</dimen>
+    <dimen name="text_margin">15dp</dimen>
+
 </resources>

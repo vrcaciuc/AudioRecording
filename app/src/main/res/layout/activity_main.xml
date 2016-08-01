@@ -64,29 +64,19 @@
                     android:id="@+id/stop_btn" />
             </LinearLayout>
 
-        <android.support.v7.widget.CardView
-            xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/card_lview"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/card_margin"
-            android:padding="@dimen/card_padding"
-            android:layout_below="@+id/buttons_layout"
-            card_view:cardCornerRadius="@dimen/card_corner_radius"
-            card_view:cardElevation="@dimen/card_elevation">
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/small_margin_top"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@+id/linearLayout">
+            android:background="@android:color/white"
+            android:layout_marginLeft="@dimen/card_margin"
+            android:layout_marginRight="@dimen/card_margin"
+            android:layout_marginTop="@dimen/card_margin"
+            android:layout_below="@+id/buttons_layout">
 
-                <ListView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/listView" />
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lvItem" />
+        </LinearLayout>
     </RelativeLayout>
 </FrameLayout>
