@@ -17,13 +17,11 @@ import java.util.ArrayList;
 public class ItemsAdapter extends ArrayAdapter<ItemModel> {
 
     private ArrayList<ItemModel> myItems;
-    private Context mContext;
     private static LayoutInflater inflater=null;
 
     public ItemsAdapter(ArrayList<ItemModel> itemList, Context context) {
         super(context, 0, itemList);
         this.myItems = itemList;
-        this.mContext = context;
         inflater = (LayoutInflater) context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -42,7 +40,6 @@ public class ItemsAdapter extends ArrayAdapter<ItemModel> {
 
     public class ViewHolder{
         TextView tvName;
-        ImageView play;
     }
 
     @Override
@@ -54,7 +51,6 @@ public class ItemsAdapter extends ArrayAdapter<ItemModel> {
             holder = new ViewHolder();
             v = inflater.inflate(R.layout.list_item,parent,false);
             holder.tvName = (TextView) v.findViewById(R.id.tv_record_name);
-            holder.play = (ImageView) v.findViewById(R.id.play_btn);
             v.setTag(holder);
         } else
             holder = (ViewHolder) v.getTag();

@@ -37,17 +37,15 @@ public class MainActivity extends Activity {
     private ItemsAdapter adapter;
     private ArrayList<ItemModel> myList;
     private String fileName;
+    private String playAudioFile;
     private int fileCount = 0;
-
-    public MainActivity() {
-    }
+    File dir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        play=(Button)findViewById(R.id.play_btn);
         stop=(Button)findViewById(R.id.stop_btn);
         record=(Button)findViewById(R.id.record_btn);
         tvTimer=(TextView) findViewById((R.id.timer_tv)) ;
@@ -58,15 +56,17 @@ public class MainActivity extends Activity {
 
         record.setEnabled(true);
         stop.setEnabled(false);
-//        play.setEnabled(false);
 
+        dir = new File(Environment.getExternalStorageDirectory() + "/Audio Recordings");
+        if(!(dir.exists() && dir.isDirectory())) {
+            dir.mkdirs();
+        }
 //        lvItem.setAdapter(new ItemsAdapter(myList, getApplicationContext()));
 //        lvItem.setAdapter(adapter);
 
         lvItem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                play(position);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {play(position);
             }
         });
 
@@ -83,13 +83,6 @@ public class MainActivity extends Activity {
                 stop();
             }
         });
-
-//        play.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) throws IllegalArgumentException,SecurityException,IllegalStateException {
-//                play();
-//            }
-//        });
     }
 
     public void displayItems(){
@@ -97,10 +90,12 @@ public class MainActivity extends Activity {
         lvItem.setAdapter(adapter);
     }
 
+
+
     public void generateNewFileName(){
         fileCount++;
-        outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Recording" + fileCount + ".3gp";
         fileName = "Recording" + fileCount;
+        outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Audio Recordings/";
     }
 
     public void record(){
@@ -115,19 +110,13 @@ public class MainActivity extends Activity {
 
         checkMediaRecorder();
 
-//        File outFile = new File(outputFile);
-//        if(outFile.exists()){
-//            outFile.delete();
-//        }
-
         myAudioRecorder=new MediaRecorder();
         myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        myAudioRecorder.setOutputFile(outputFile);
+        myAudioRecorder.setOutputFile(outputFile + fileName + ".3gp");
 
         record.setEnabled(false);
-//        play.setEnabled(false);
         stop.setEnabled(true);
 
         try {
@@ -143,6 +132,10 @@ public class MainActivity extends Activity {
     public void stop(){
 
         myList.add(new ItemModel(fileName, tvTimer.toString()));
+        int i;
+        for (i = 0; i < myList.size(); i ++) {
+            System.out.println("File name: " + myList.get(i).getName());
+        }
         displayItems();
 
         tvTimer.setText(getResources().getString(R.string.timer_val));
@@ -158,20 +151,19 @@ public class MainActivity extends Activity {
 
         record.setEnabled(false);
         stop.setEnabled(false);
-//        play.setEnabled(true);
     }
 
     public void play(int pos){
 
+        playAudioFile = myList.get(pos).getName() + ".3gp";
         tvTimer.setText(myList.get(pos).getDuration());
         checkMediaPlayer();
         m = new MediaPlayer();
 
         stop.setEnabled(false);
         record.setEnabled(false);
-//        play.setEnabled(false);
 
-        try {m.setDataSource(outputFile);}
+        try {m.setDataSource(outputFile + playAudioFile);}
         catch (IOException e) {e.printStackTrace();}
 
         try {m.prepare();}
@@ -182,6 +174,7 @@ public class MainActivity extends Activity {
             countDown(mins * 60 + secs);
         } else
             countDown(secs);
+
         m.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
